@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Tabs Responsible - iTabs</title>
+	<meta name="viewport" content="initial-scale=1,minimum-scale=1, maximum-scale=1,user-scalable=no">  
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	
+	<link  rel="stylesheet" href="itabs.css">
+	<script type="text/javascript" src="itabs.js"></script>
+	
+	<script type="text/javascript">
+	
+
+</script>
+</head>
+<body>
+
+<h1>Tabs Responsible - iTabs - v1.0</h1>
+
+<p>Developed by Wallace Rio <wallrio@gmail.com></p>
+<hr>
+
+<h2>Download files</h2>
+<a href="itabs.css">itabs.css</a><br>
+<a href="itabs.js">itabs.js</a>
+<br><br><br>
+
+<h2>Cross-Browser</h2>
+<p>Tested on Firefox 45 / IE 8 / Opera 12 / Chrome 38 / Safari 5</p>
+<br><br>
+
+<h2>Using</h2>
+<p>Insert script tag and link tag into your head document html</p>
+<pre>
+	&lt;link  rel="stylesheet" href="itabs.css"&gt;
+	&lt;script type="text/javascript" src="itabs.js"&gt;&lt;/script&gt;
+</pre>
+<br><br>
+
+<h2>Tabs default</h2>
+<p>Insert markup above:</p>
+<pre>
+	&lt;div class="itabs tabFlat"&gt;
+		
+		&lt;div data-rel="tabs" &gt;
+			&lt;a data-rel="tab" data-for="view1" data-status="active"&gt;view1&lt;/a&gt;
+			&lt;a data-rel="tab" data-for="view2" disabled="disabled"&gt;view2&lt;/a&gt;
+			&lt;a data-rel="tab" data-for="view3"  &gt;view3&lt;/a&gt;
+		&lt;/div&gt;
+
+		&lt;div data-rel="slides"&gt;
+			&lt;div data-rel="slide" data-id="view1"   &gt;
+				1	
+			&lt;/div&gt;
+			&lt;div data-rel="slide" data-id="view2"&gt;
+				2
+			&lt;/div&gt;
+			&lt;div data-rel="slide" data-id="view3" &gt;
+				3
+			&lt;/div&gt;
+		&lt;/div&gt;
+
+	&lt;/div&gt;
+</pre>
+
+<h3>Example</h3>
+
+<div class="itabs tabFlat">
+		
+		<div data-rel="tabs" >
+			<a data-rel="tab" data-for="view1" data-status="active">view1</a>
+			<a data-rel="tab" data-for="view2" disabled="disabled">view2</a>
+			<a data-rel="tab" data-for="view3"  >view3</a>
+		</div>
+
+		<div data-rel="slides">
+			<div data-rel="slide" data-id="view1"   >
+				1	
+			</div>
+			<div data-rel="slide" data-id="view2">
+				2
+			</div>
+			<div data-rel="slide" data-id="view3" >
+				3
+			</div>
+		</div>
+
+	</div>
+
+</body>
+</html>
