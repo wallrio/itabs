@@ -1,9 +1,14 @@
 /**
- * iTabs v1.0
- * author: Wallace Rio <wallrio@gmail.com>
- * 26/04/2016
+ * iTabs v1.1 - 27/04/2016
+ * divide of content by tab
+ *
+ * developed by Wallace Rio <wallrio@gmail.com>
+ * wallrio.com
+ * 
+ * tested on firefox/chrome/opera/ie8/safari
  * 
  */
+
 
 .itabs.tabFlat{
 	background: #eee;
