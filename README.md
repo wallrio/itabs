@@ -9,8 +9,8 @@ Plugin javascript to use tabs to separate content
 <h3>Use</h3>
 <p>Insert script tag and link tag into your head document html</p>
 
-	&lt;link  rel="stylesheet" href="itabs.css"&gt;
-	&lt;script type="text/javascript" src="itabs.js"&gt;&lt;/script&gt;
+	<link  rel="stylesheet" href="itabs.css">
+	<script type="text/javascript" src="itabs.js"></script>
 
 
 <h3>Change the style on css file (itabs.css)</h3>
@@ -21,62 +21,62 @@ Plugin javascript to use tabs to separate content
 <h5>Tabs default</h5>
 <p>Insert markup below:</p>
 
-	&lt;div class="itabs tabFlat"&gt;
+	<div class="itabs tabFlat">
 		
-		&lt;div data-rel="tabs" &gt;
-			&lt;a data-rel="tab" data-for="view1" data-status="active"&gt;view1&lt;/a&gt;
-			&lt;a data-rel="tab" data-for="view2" disabled="disabled"&gt;view2&lt;/a&gt;
-			&lt;a data-rel="tab" data-for="view3"  &gt;view3&lt;/a&gt;
-		&lt;/div&gt;
+		<div data-rel="tabs" >
+			<a data-rel="tab" data-for="view1" data-status="active">view1</a>
+			<a data-rel="tab" data-for="view2" disabled="disabled">view2</a>
+			<a data-rel="tab" data-for="view3"  >view3</a>
+		</div>
 
-		&lt;div data-rel="slides"&gt;
-			&lt;div data-rel="slide" data-id="view1"   &gt;
+		<div data-rel="slides">
+			<div data-rel="slide" data-id="view1"   >
 				view 1
-			&lt;/div&gt;
-			&lt;div data-rel="slide" data-id="view2"&gt;
+			</div>
+			<div data-rel="slide" data-id="view2">
 				view 2
-			&lt;/div&gt;
-			&lt;div data-rel="slide" data-id="view3" &gt;
+			</div>
+			<div data-rel="slide" data-id="view3" >
 				view 3
-			&lt;/div&gt;
-		&lt;/div&gt;
+			</div>
+		</div>
 
-	&lt;/div&gt;
+	</div>
 
 <h5>Example 2 - Action run-time</h5>
 <p>click on second tab for visualize the action</p>
 
-&lt;div class="itabs tabFlat" id="ajax" &gt;
+<div class="itabs tabFlat" id="ajax" >
 		
-		&lt;div data-rel="tabs" &gt;
-			&lt;a data-rel="tab" data-for="view1a" data-status="active"&gt;view1&lt;/a&gt;
-			&lt;a data-rel="tab" data-for="view2b" disabled="disabled"&gt;view2&lt;/a&gt;
-			&lt;a data-rel="tab" data-for="view3c"  &gt;view3&lt;/a&gt;
-		&lt;/div&gt;
+		<div data-rel="tabs" >
+			<a data-rel="tab" data-for="view1a" data-status="active">view1</a>
+			<a data-rel="tab" data-for="view2b" disabled="disabled">view2</a>
+			<a data-rel="tab" data-for="view3c"  >view3</a>
+		</div>
 
-		&lt;div data-rel="slides"&gt;
-			&lt;div data-rel="slide" data-id="view1a"   &gt;
+		<div data-rel="slides">
+			<div data-rel="slide" data-id="view1a"   >
 				1	
-			&lt;/div&gt;
-			&lt;div data-rel="slide" data-id="view2b"&gt;
+			</div>
+			<div data-rel="slide" data-id="view2b">
 				2
-			&lt;/div&gt;
-			&lt;div data-rel="slide" data-id="view3c" &gt;
+			</div>
+			<div data-rel="slide" data-id="view3c" >
 				3
-			&lt;/div&gt;
-		&lt;/div&gt;
+			</div>
+		</div>
 
-	&lt;/div&gt;
+	</div>
 
 
 <h3>Using a script</h3>
 	
-	&lt;script type="text/javascript"&gt;
+	<script type="text/javascript">
 		itabs('ajax').event('click').tab('view2b',function(e){
 			e.action.tab().content('tab new');		
 			e.action.slide().content('content new');					
 		});
-	&lt;/script&gt;
+	</script>
 
 
 
