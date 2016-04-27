@@ -15,7 +15,7 @@
 </head>
 <body>
 
-<h1>Tabs Responsible - iTabs - v1.0</h1>
+<h1>Tabs Responsible - iTabs - v1.1</h1>
 
 <p>Developed by Wallace Rio <wallrio@gmail.com></p>
 <hr>
@@ -36,6 +36,15 @@
 	&lt;script type="text/javascript" src="itabs.js"&gt;&lt;/script&gt;
 </pre>
 <br><br>
+
+
+<h2>Change the style on css file (itabs.css)</h2>
+<p>Is recommend include other file css for changes</p>
+<br><br>
+
+<hr>
+
+<h3>Example</h3>
 
 <h2>Tabs default</h2>
 <p>Insert markup above:</p>
@@ -63,9 +72,7 @@
 	&lt;/div&gt;
 </pre>
 
-<h3>Example</h3>
-
-<div class="itabs tabFlat">
+<div class="itabs tabFlat" id="ajax1">
 		
 		<div data-rel="tabs" >
 			<a data-rel="tab" data-for="view1" data-status="active">view1</a>
@@ -86,6 +93,129 @@
 		</div>
 
 	</div>
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+<h3>Example 2 - Action run-time</h3>
+	<p>click on second tab for visualize the action</p>
+
+<br>
+<div class="itabs tabFlat" id="ajax">
+		
+		<div data-rel="tabs" >
+			<a data-rel="tab" data-for="view1a" data-status="active">view1</a>
+			<a data-rel="tab" data-for="view2b" >view2</a>
+			<a data-rel="tab" data-for="view3c"  >view3</a>
+		</div>
+
+		<div data-rel="slides">
+			<div data-rel="slide" data-id="view1a"   >
+				1	
+			</div>
+			<div data-rel="slide" data-id="view2b">
+				2
+			</div>
+			<div data-rel="slide" data-id="view3c" >
+				3
+			</div>
+		</div>
+
+</div>
+<br>
+<br>
+<br>
+<br>
+<pre>
+	&lt;div class="itabs tabFlat" id="ajax" &gt;
+		
+		&lt;div data-rel="tabs" &gt;
+			&lt;a data-rel="tab" data-for="view1a" data-status="active"&gt;view1&lt;/a&gt;
+			&lt;a data-rel="tab" data-for="view2b" disabled="disabled"&gt;view2&lt;/a&gt;
+			&lt;a data-rel="tab" data-for="view3c"  &gt;view3&lt;/a&gt;
+		&lt;/div&gt;
+
+		&lt;div data-rel="slides"&gt;
+			&lt;div data-rel="slide" data-id="view1a"   &gt;
+				1	
+			&lt;/div&gt;
+			&lt;div data-rel="slide" data-id="view2b"&gt;
+				2
+			&lt;/div&gt;
+			&lt;div data-rel="slide" data-id="view3c" &gt;
+				3
+			&lt;/div&gt;
+		&lt;/div&gt;
+
+	&lt;/div&gt;
+</pre>
+
+	<p>Using on script</p>
+		<pre>
+			&lt;script type="text/javascript"&gt;
+				itabs('ajax').event('click').tab('view2b',function(e){
+					e.action.tab().content('tab new');		
+					e.action.slide().content('content new');					
+				});
+			&lt;/script&gt;
+		</pre>
+
+
+<script type="text/javascript">
+	itabs('ajax').event('click').tab('view2b',function(e){
+		e.action.tab().content('tab new');		
+		e.action.slide().content('content new');
+	
+	});
+</script>
+
+<hr>
+
+<h3>API - javascript</h3>
+
+	<strong>Action on click of tab</strong><br>	
+	<pre>
+		itabs('ajax').event('click').tab('view2b',function(e){
+			// insert you action here
+		});
+	</pre>
+
+	<strong>Change title of tab</strong><br>	
+	<pre>
+		e.action.tab('data-for_of_tab').content('content');
+		
+		or
+
+		e.action.tab().content('content'); // this command get tab fron function clousure event
+
+		or
+
+		itabs('id_of_tabWrapper').action.tab('data-for_of_tab').content('content');		
+
+		or
+
+		itabs('id_of_tabWrapper').action.tab('data-for_of_tab').content('content');	
+	</pre>
+
+	<strong>Change title of slide</strong><br>	
+	<pre>
+		e.action.slide('data-id_of_slide').content('content');
+		
+		or
+
+		e.action.slide().content('content'); // this command get tab fron function clousure event
+
+		or
+
+		itabs('id_of_tabWrapper').action.slide('data-id_of_slide').content('content');		
+
+		or
+
+		itabs('id_of_tabWrapper').action.slide('data-id_of_slide').content('content');	
+	</pre>
 
 </body>
 </html>
