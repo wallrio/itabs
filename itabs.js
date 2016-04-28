@@ -19,36 +19,7 @@
 /**
  * fix compatible getElementsByClassName to ie8 
  */
-if (!document.getElementsByClassName) {
-    var indexOf = [].indexOf || function(prop) {
-        for (var i = 0; i < this.length; i++) {
-            if (this[i] === prop) return i;
-        }
-        return -1;
-    };
-    getElementsByClassName = function(className, context) {
-        var elems = document.querySelectorAll ? context.querySelectorAll("." + className) : (function() {
-            var all = context.getElementsByTagName("*"),
-                elements = [],
-                i = 0;
-            for (; i < all.length; i++) {
-                if (all[i].className && (" " + all[i].className + " ").indexOf(" " + className + " ") > -1 && indexOf.call(elements, all[i]) === -1) elements.push(all[i]);
-            }
-            return elements;
-        })();
-        return elems;
-    };
-    document.getElementsByClassName = function(className) {
-        return getElementsByClassName(className, document);
-    };
-
-    if(Element) {
-        Element.prototype.getElementsByClassName = function(className) {
-            return getElementsByClassName(className, this);
-        };
-    }
-}
-
+if (!document.getElementsByClassName) {var indexOf = [].indexOf || function(prop) {for (var i = 0; i < this.length; i++) {if (this[i] === prop) return i; } return -1; }; getElementsByClassName = function(className, context) {var elems = document.querySelectorAll ? context.querySelectorAll("." + className) : (function() {var all = context.getElementsByTagName("*"), elements = [], i = 0; for (; i < all.length; i++) {if (all[i].className && (" " + all[i].className + " ").indexOf(" " + className + " ") > -1 && indexOf.call(elements, all[i]) === -1) elements.push(all[i]); } return elements; })(); return elems; }; document.getElementsByClassName = function(className) {return getElementsByClassName(className, document); }; if(Element) {Element.prototype.getElementsByClassName = function(className) {return getElementsByClassName(className, this); }; } }
 
 	var preFunctions = function(idTab){
 		TabNow = idTab || null;
@@ -65,6 +36,7 @@ if (!document.getElementsByClassName) {
 				return {
 					content:function(string){										
 						var slide = document.querySelector('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"][data-for="'+dataFor+'"]');
+
 						slide.innerHTML = string;
 					
 					}
@@ -83,13 +55,20 @@ if (!document.getElementsByClassName) {
 
 		},
 		event:function(e){
+
 			var eArray = e.split(' ');
 			return {
-				tab:function(dataFor,callback){				
+				tab:function(dataFor,callback){	
+
 					Functions.slideNow = dataFor;
 					Functions.addEvent(window,'load',function(element){
-						 var tab = document.querySelector('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"][data-for="'+dataFor+'"]');						
+
+						var tab = document.querySelector('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"][data-for="'+dataFor+'"]');						
+						if(tab == null)
+							return false;
+						
 						for (var i = 0;i<eArray.length; i++) {
+
 							Functions.addEvent(tab,eArray[i],function(element){
 								if(callback)
 									callback(Functions);							
@@ -188,32 +167,29 @@ if (!document.getElementsByClassName) {
 				 if( typeof slide[i] == 'object' ){									
 					slide[i].setAttribute('data-status','');																							
 				 }
-			}			
-										
-			document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]').setAttribute('data-status','active');
-			document.querySelector('[data-idtab="'+idTabNow+'"][data-id="'+dataFor+'"]').setAttribute('data-status','active');
-
-								
+			}		
+		
+		 	if(document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]'))
+				document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]').setAttribute('data-status','active');
+			
+			if(document.querySelector('[data-idtab="'+idTabNow+'"][data-id="'+dataFor+'"]'))
+				document.querySelector('[data-idtab="'+idTabNow+'"][data-id="'+dataFor+'"]').setAttribute('data-status','active');
+									
 		},
 		init:function(){
-			var itabs = document.getElementsByClassName('itabs');
-
-		
+			var itabs = document.getElementsByClassName('itabs');	
 
 			for(var i = 0;i<itabs.length;i++){
 
-					var idTab = 'itabs'+countITabs;
-
-					
-					
+				var idTab = 'itabs'+countITabs;
+										
 				if(itabs[i].getAttribute('data-idtab') != null)
 					continue;
 
+				itabs[i].setAttribute('data-idtab',idTab);
 
-				if(itabs[i].getAttribute('id') == null){
-
-					itabs[i].setAttribute('id',idTab);
-					itabs[i].setAttribute('data-idtab',idTab);
+				if(itabs[i].getAttribute('id') == null){					
+					itabs[i].setAttribute('id',idTab);					
 				}else{
 					idTab = itabs[i].getAttribute('id');
 				}
@@ -232,40 +208,29 @@ if (!document.getElementsByClassName) {
 					if( typeof tab[a] == 'object' ){
 						var dataFor = tab[a].getAttribute('data-for');
 						var dataStatus = tab[a].getAttribute('data-status');						
-
 						if(dataStatus == 'active'){
 							dataStatus_key = dataFor;														
 						}
-
 						tab[a].setAttribute('data-idtab',idTab);	
-
-						Functions.addEvent(tab[a],'click',function(element){
-							
+						Functions.addEvent(tab[a],'click',function(element){							
 							var idTabNow = element.getAttribute('data-idtab');
-							var dataFor = element.getAttribute('data-for');
-							
+							var dataFor = element.getAttribute('data-for');						
 							Functions.openTab(idTabNow,dataFor);
 						});
-
-					}
-					
+					}					
 				}
 				
-				dataStatus_key = document.querySelector('#'+idTab).parentNode.querySelector('[data-status="active"]').getAttribute('data-for')
-				
-				Functions.openTab(idTab,dataStatus_key,'init');
-
+				dataStatus_key = document.querySelector('#'+idTab).querySelector('[data-status="active"]').getAttribute('data-for')							
+				Functions.openTab(idTab,dataStatus_key,'init');	
 				countITabs++;
 				
 			}
-		},
+		}
 	}
 
 
-	Functions.addEvent(window,'load',function(){
-	
+	Functions.addEvent(window,'load',function(){	
 		Functions.init();
-
 		setInterval(function(){
 			Functions.init();
 		},1000);
