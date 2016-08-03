@@ -107,8 +107,57 @@ Plugin javascript to use tabs to separate content
 
 <hr>
 
+<h5>Example 4 - Hash on address bar</h5>
+	<p>With click of tab was automatic insert hash by id tab on address bar</p>
+<p>Insert attributes 'data-hash="true"' for use hash</p>
+
+	<div class="itabs" data-hash="true">     
+        <div data-rel="tabs" >
+            <a data-rel="tab" data-for="view1" data-status="active"  >
+            	view 1
+            </a>
+            <a data-rel="tab" data-for="view2">
+        		view 2
+        	</a>
+            </div>
+        <div data-rel="slides">
+            <div data-rel="slide" data-id="view1">view 1</div>
+            <div data-rel="slide" data-id="view2">view 2</div>
+        </div>
+    </div>
 
 
+<h5>Example 5 - Execute javascript on tabclick</h5>
+	<p>With click of tab is run code defined on tag first itabs with attribute 'action-tabclick'</p>
+
+	<div class="itabs" action-tabclick="function(value){alert(value);}">     
+        <div data-rel="tabs" >
+            <a data-rel="tab" data-for="view1" data-status="active"  >
+            	view 1
+            </a>
+            <a data-rel="tab" data-for="view2">
+        		view 2
+        	</a>
+            </div>
+        <div data-rel="slides">
+            <div data-rel="slide" data-id="view1">view 1</div>
+            <div data-rel="slide" data-id="view2">view 2</div>
+        </div>
+    </div>    
+
+    OBS: the content of value is JSON.
+    	{
+    		"tab":{
+	    		"name":"name_of_tab",
+	    		"content":"content_of_tab"
+    		},
+    		"slide":{
+    			"name":"name_of_slide",
+    			"content":"content_of_slide"
+    		}
+    	}
+
+<hr>
 
 <h3>Using a script</h3>
 	
@@ -126,9 +175,31 @@ Plugin javascript to use tabs to separate content
 
 <h4>Action on click of tab</h4>	
 
-	itabs('ajax').event('click').tab('view2b',function(e){
-		// insert you action here
+- Example 1:
+
+	itabs('ajax').event('click').tab(function(id_of_tab_clicked){
+		// The code here only run on click of tab with id 'id_of_tab'
+	},'id_of_tab');
+
+- Example 2:
+
+	itabs('ajax').event('click').tab(function(id_of_tab_clicked){
+		// The code here run on click of all tabs
 	});
+
+	OR
+
+	itabs('itabMe').clickTab(function(nameTab,elementTab){
+        // insert you action here            
+    });
+
+<h4>Action on tab ready</h4>	
+	itabs('itabMe').ready(function(){
+        // insert you action here            
+    });
+
+
+
 
 <h4>Change title of tab</h4>	
 	
