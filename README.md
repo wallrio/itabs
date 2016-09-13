@@ -256,12 +256,3 @@ Plugin javascript to use tabs to separate content
             // code javascript run after edit tab
         return true;
     });
-
-
-<h3>API - javascript</h3>
-
-
-
-
-
-
