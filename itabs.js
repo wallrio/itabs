@@ -33,7 +33,27 @@
 		ready:function(callback){			
 			Functions.loaded = callback;
 		},
+		
+		/**
+		 * captura informação do itab atual
+		 * @return {json} 
+		 */
+		get:function(){
+			return {				
+				tab: {
+					name:Functions.slideNow,
+					content:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-for="'+Functions.slideNow+'"]').innerHTML,
+					element:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-for="'+Functions.slideNow+'"]')
+				},
+				slide: {
+					name:Functions.slideNow,
+					content:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-id="'+Functions.slideNow+'"]').innerHTML,
+					element:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-id="'+Functions.slideNow+'"]')
+				}
 
+			}
+		}
+		,
 		/**
 		 * atribuir função ao abrir uma aba
 		 * @param  {Function} callback [função anonima]

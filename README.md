@@ -256,3 +256,12 @@ Plugin javascript to use tabs to separate content
             // code javascript run after edit tab
         return true;
     });
+
+
+    <h2>Get current tab information</h2>
+  
+    itabs('itabMe').event('click').tab(function(e){   
+        // e = object content general information of itab
+        // e.get() = object content information of current tab        
+        alert(e.get().tab.name);
+    });
