@@ -1,11 +1,11 @@
 /**
- * iTabs v1.4 - 02/08/2016
+ * iTabs v1.12 - 13/09/2016
  * divide of content by tab
  *
  * developed by Wallace Rio <wallrio@gmail.com>
  * wallrio.com
  * 
- * tested on firefox/chrome/opera/ie8/safari
+ * tested on firefox v48 /chrome v38
  * 
  */
 
@@ -26,17 +26,58 @@
 	var Functions = {
 		TabNow:null,
 		slideNow:null,
-		actClickTab:null,
+		actClickTab:Array(),
 		loaded:null,
 		coutEventTab:0,
 		eventClickFunctions:{},
-		ready:function(callback){
+		ready:function(callback){			
 			Functions.loaded = callback;
 		},
-		clickTab:function(callback){			
-			Functions.actClickTab = callback;
+
+		/**
+		 * atribuir função ao abrir uma aba
+		 * @param  {Function} callback [função anonima]
+		 * @param  {string}   TabNow   [id da itab]
+		 * @param  {string}   foridTab [id da aba]
+		 * @return null            
+		 */
+		clickTab:function(callback,TabNow,foridTab){
+
+			var count = Functions.actClickTab.length;
+			
+			Functions.actClickTab[count] = Object();
+
+				for(var i=0;i<count;i++){								
+					if(Functions.actClickTab[i]){
+						if(Functions.actClickTab[i][TabNow]){
+							if(Functions.actClickTab[i][TabNow]['tab'] == foridTab){
+
+								Functions.actClickTab[i][TabNow] = {			
+									'tab':foridTab,
+									'callback':callback
+								};
+								return false;
+							}
+						}						
+					}				
+					
+				}
+		
+			Functions.actClickTab[count][TabNow] = {			
+				'tab':foridTab,
+				'callback':callback
+			};
+			
 		},
-		editTab:function(nameTab,newName){
+
+
+		/**
+		 * altera titulo da aba
+		 * @param  {string} nameTab [id da aba]
+		 * @param  {string} newName [titulo da aba]
+		 * @return null
+		 */
+		editTab:function(nameTab,newName,callback){
 			var title = '';
 			var forid = '';
 
@@ -51,7 +92,17 @@
 			var nameTabFit = nameTab.replace(/ /g,"");
 			var foridTabFit = forid.replace(/ /g,"");
 			$('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]').find('label').html(newName);
+			
+			if(callback)
+				callback();
 		},
+
+		/**
+		 * apaga uma aba
+		 * @param  {string}   nameTab  [id do itab]
+		 * @param  {Function} callback [função anonima a ser executada após a exclusão]
+		 * @return null
+		 */
 		delTab:function(nameTab,callback){
 
 			var title = '';
@@ -78,14 +129,21 @@
 
 			$('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]').remove();
 			$('#'+TabNow+' > [data-rel="slides"] [data-id="'+foridTabFit+'"]').remove();
-
-
-			Functions.openTab(prevTab,null,TabNow);
+	
+			Functions.openTab(prevTab,'init2',TabNow);
 
 			
-
 		},
-		addTab:function(nameTab,callback,active,htmlToName,clickCallbak){
+
+		/**
+		 * Adiciona uma nova aba
+		 * @param {string}   nameTab     [id do itab]
+		 * @param {Function} callback      [função a ser executada após a criação da aba]
+		 * @param {boolean}   active     [abre ou não a aba após a criação]
+		 * @param {string}   htmlToName    [html a ser incluido junto com o titulo da aba]
+		 * @param {Function}   clickCallback [função a ser executada ao abrir a aba]
+		 */
+		addTab:function(nameTab,callback,active,htmlToName,clickCallback){
 			var title = '';
 			var forid = '';
 
@@ -97,21 +155,28 @@
 				forid = nameTab;
 			}
 
+			if(htmlToName == undefined)
+				htmlToName = '';
+
 			if(callback == undefined)
 				callback = '';
 			
 
-			if(clickCallbak == undefined)
-				clickCallbak = '';
+			if(clickCallback == undefined)
+				clickCallback = '';
 
 			var nameTabFit = title.replace(/ /g,"");
 			var foridTabFit = forid.replace(/ /g,"");
 			
+			
+
+			Functions.clickTab(clickCallback,TabNow,foridTabFit);
+
 			var node = document.createElement("a");
 			node.setAttribute('data-rel','tab');
 			node.setAttribute('data-for',foridTabFit);			
 			node.setAttribute('data-idtab',TabNow);			
-			node.setAttribute('data-actionclick',clickCallbak);			
+			node.setAttribute('data-tabclick',clickCallback);			
 			node.innerHTML = '<label>'+title+'</label>';		
 			
 			var node2 = document.createElement("div");
@@ -121,9 +186,11 @@
 			node3.setAttribute('data-rel','slide');
 			node3.setAttribute('data-id',foridTabFit);			
 			node3.setAttribute('data-idtab',TabNow);	
+			node3.innerHTML = '';
 
-			if( document.querySelector('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]') != null){
-				Functions.openTab(nameTabFit,null,TabNow);						
+			if( document.querySelector('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]') != null){				
+				Functions.openTab(foridTabFit,null,TabNow);				
+				return false;					
 			}else{
 				document.querySelector('#'+TabNow+' > [data-rel="tabs"]').appendChild(node);		
 				node.appendChild(node2);		
@@ -132,36 +199,78 @@
 				
 			
 
-			
-
+			var action = {
+				html:function(html,callbackin){
+						
+					node3.innerHTML = html;					
 					
 
-			var action = {
-				html:function(html){					
-					node3.innerHTML = html;
+				
+					document.querySelector('#'+TabNow+' > [data-rel="slides"]').appendChild(node3);		
+
+					var arr = node3.getElementsByTagName('script');
+
+					for (var n = 0; n < arr.length; n++){
+						var g = document.createElement('script');
+						var s = document.getElementsByTagName('script')[0];
+
+					    if(arr[n].src){
+					    	g.src = arr[n].src;							
+					    	var head = document.querySelector('#'+TabNow+' > [data-rel="slides"]');
+					    	// var head = document.getElementsByTagName("head")[0];
+							head.appendChild(g);
+							// arr[n].remove();
+							// s.parentNode.insertBefore(g, s);
+					    }else{
+
+							g.text = arr[n].innerHTML;
+							head.appendChild(g);
+							// g.text = "alert(\"hi\");"
+							// s.parentNode.insertBefore(g, s);
+					    }
+
+
+					    
+					}
+
+					for (var n = 0; n < arr.length; n++){
+						arr[n].remove();
+					}
+
+					if(callbackin)
+						callbackin();
+					
+
+					
 				}
 			}
 
 			if(typeof callback == 'function'){
-				node3.innerHTML = callback(action);		
+				var returns = callback(action);
+				if(returns)
+					node3.innerHTML = returns; 	 	
+				
 			}else if(typeof callback == 'string'){
-				node3.innerHTML = callback;		
+				node3.innerHTML = callback || '';		
 			}
-			document.querySelector('#'+TabNow+' > [data-rel="slides"]').appendChild(node3);		
 			
 			
 			if(active == true)
-				Functions.openTab(foridTabFit,null,TabNow);		
+				Functions.openTab(foridTabFit,'init2',TabNow);		
 					
 		},
 		action:{			
 			tab:function(dataFor){
 				dataFor = dataFor || Functions.slideNow;				 
 				return {
-					content:function(string){										
-						var slide = document.querySelector('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"][data-for="'+dataFor+'"]');
-
-						slide.innerHTML = string;
+					content:function(string){												
+						var slide = document.querySelector('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"][data-for="'+dataFor+'"]');						
+						if(string != null && string != undefined){
+							slide.innerHTML = string;
+							return slide.innerHTML;
+						}else{							
+							return slide.innerHTML;
+						}
 					
 					}
 				}
@@ -171,7 +280,12 @@
 				return {
 					content:function(string){										
 						var slide = document.querySelector('[data-rel="slide"][data-idtab="'+Functions.TabNow+'"][data-id="'+dataFor+'"]');
-						slide.innerHTML = string;
+						if(string != null && string != undefined){
+							slide.innerHTML = string;
+							return slide.innerHTML;
+						}else{							
+							return slide.innerHTML;
+						}
 					
 					}
 				}
@@ -185,32 +299,83 @@
 				tab:function(callback,dataFor){	
 					
 					Functions.coutEventTab++;
-					// alert(Functions.eventClickFunctions[dataFor]);
+					
+
+					var callTab = (function(element){	
+																		
+								var elt = element.getAttribute('data-for');
+
+								Functions.slideNow = elt;
+
+								var fn_option = {
+									tab: {
+										name:elt,
+										content:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-for="'+elt+'"]').innerHTML,
+										element:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-for="'+elt+'"]')
+									},
+									slide: {
+										name:elt,
+										content:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-id="'+elt+'"]').innerHTML,
+										element:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-id="'+elt+'"]')
+									}
+
+								};
+
+
+								if(callback)
+									callback(Functions,fn_option);
+						});
+
 
 					if(dataFor == null || dataFor == undefined){
 
 						if(typeof Functions.eventClickFunctions['!all'] == 'undefined')
 							Functions.eventClickFunctions['!all'] = {};					
 
-
-						
-						
-
 						Functions.eventClickFunctions['!all'][Functions.coutEventTab] = callback;					
 						
-
-						
-						// var func = Functions.eventClickFunctions['!all'][Functions.coutEventTab];
 						
 
-						Functions.addEvent(window,'load',function(element){
+						
+						
 
-							$('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"]').click(function(){
-								/*var elt = $(this).attr('data-for');
-								if(callback)
-									callback(elt);*/
+						
+
+						Functions.addEvent(window,'load',function(element){	
+									
+							// document.querySelector('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"]').onclick = null;
+							var elementTabArray = document.querySelectorAll('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"]');
+							for(var i=0;i<elementTabArray.length;i++){
+								Functions.addEvent(elementTabArray[i],e,function(element){									
+									callTab(element);
+								});
+							}
+							
+					
+
+							
+
+								if(window.location.hash){
+	                   				var dataFor = String(window.location.hash).replace('#','');    	
+									if(dataFor != undefined && dataFor.length != 0 ){
+										callTab(document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-for="'+dataFor+'"]'));
+									}
+									return false;
+								}else{
+
+									var dataHashBool = document.querySelector('.itabs[data-idtab="'+Functions.TabNow+'"]').getAttribute('data-hash');
+									var dataFor = document.querySelector('.itabs[data-idtab="'+Functions.TabNow+'"]').querySelector('[data-status="active"]').getAttribute('data-for');
+									var element = document.querySelector('.itabs[data-idtab="'+Functions.TabNow+'"]').querySelector('[data-status="active"]');
+									callTab(element);
+									if(dataHashBool == 'true')
+					 				window.location = "#"+dataFor;
+								}
+
 							});
-						});
+							
+
+
+
 						return false;
 					}
 
@@ -224,25 +389,36 @@
 					
 
 					Functions.slideNow = dataFor;
-					Functions.addEvent(window,'load',function(element){
-
+					Functions.addEvent(window,'load',function(element,callTab){
+					
 						var tab = document.querySelector('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"][data-for="'+dataFor+'"]');						
+
 						if(tab == null)
 							return false;
 						
 						for (var i = 0;i<eArray.length; i++) {
-
-							/*Functions.addEvent(tab,eArray[i],function(element){
-								if(callback)
-									callback(dataFor);							
-							});*/
+							Functions.addEvent(tab,eArray[i],function(element,callTab){																															
+								if(callTab){									
+									callTab(element);							
+								}
+							},null,callTab);
 						};
-					});
+					},null,callTab);
 																			
 				}
 			}		
 		},
-		addEvent:function(objs,event,callback,mode,elem2,table){
+
+		/**
+		 * manipulador de eventos load/click/mousemove e outros
+		 * @param {[type]}   objs     [elemento DOM]
+		 * @param {[type]}   event    [evento]
+		 * @param {Function} callback [função a ser executado no evento]
+		 * @param {[type]}   mode     [modo de captura]
+		 * @param {[type]}   elem2    [passagem de parametro]
+		 * @param {[type]}   table    [passagem de parametro]
+		 */
+		addEvent:function(objs,event,callback,mode,par1,par2){
 			
 			if(mode == undefined)
 				mode = true;
@@ -252,12 +428,12 @@
 			if(objs.addEventListener){ 				
 				return objs.addEventListener(event,function(){
 					if(callback)
-						callback(objs,elem2,table);
+						callback(objs,par1,par2);
 				},mode); 
 			}else if(objs.attachEvent){
 				return objs.attachEvent('on'+event,function(){
 					if(callback)
-						callback(objs,elem2,table);
+						callback(objs,par1,par2);
 				}); 
 			}
 		},
@@ -302,6 +478,12 @@
 
 			return size;
 		},
+		/**
+		 * captura um elemento DOM por seu atributo
+		 * @param {[type]} attribute [atributo]
+		 * @param {[type]} value     [valor]
+		 * @param {[type]} element   [elemento DOM]
+		 */
 		FindByAttr:function(attribute, value,element){
 			if(element == undefined)
 				element = document;
@@ -312,14 +494,36 @@
 		  }
 		},
 
+		/**
+		 * abre uma aba
+		 * @param  {[type]} dataFor  [id da aba]
+		 * @param  {[type]} mode     [modo de abertura]
+		 * @param  {[type]} idTabNow [id do itab]
+		 * @return null
+		 */
 		openTab:function(dataFor,mode,idTabNow){
 
-			alert(idTabNow);
-				return false;
+			
+			if(document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] ') && mode != 'init' && mode != 'initauto' && mode != 'init2'){
+				
+				document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"]').setAttribute('data-mode','notransition');					
+				document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"]').setAttribute('data-status','');	
+				document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] span').style.width = '0px';
+				
+				setTimeout(function(){
+					document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"]').removeAttribute('data-mode');
+					document.querySelector('#'+idTabNow).querySelector('[data-rel="progress"]').setAttribute('data-status','step-complete');											
+					document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] span').style.width = null;
+				},100);
+				if(typeof progressTime != 'undefined'){
+					clearInterval(progressTime[idTabNow]);
+				}
+			}
+
 			if(idTabNow == undefined)
 			idTabNow = Functions.TabNow;
 		
-			if( mode == undefined)
+			if( mode == undefined || mode == 'initauto' )
 				mode = 'normal';
 										
 			var tab = document.querySelector('[id="'+idTabNow+'"]').querySelectorAll('[data-rel="tab"][data-idtab="'+idTabNow+'"]');
@@ -328,7 +532,7 @@
 
 			for(var i = 0;i<tab.length;i++){							
 				if( typeof tab[i] == 'object' ){						
-					if(mode == 'normal' )					
+					if(mode == 'normal' || mode == 'init2')					
 						tab[i].setAttribute('data-status','');																							
 				}
 			}
@@ -336,6 +540,7 @@
  			for(var i = 0;i<slide.length;i++){			
 				 if( typeof slide[i] == 'object' ){									
 					slide[i].setAttribute('data-status','');																							
+					// slide[i].style.height = '0px';																							
 				 }
 			}		
 			
@@ -343,17 +548,26 @@
 
 		 	if(document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]')){
 				document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]').setAttribute('data-status','active');
-
-
-						 if(typeof Functions.actClickTab == 'function'){						
-							Functions.actClickTab(dataFor,document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]'));
+				
+				
+				var tabContentHeight = document.querySelector('[data-idtab="'+idTabNow+'"]').offsetHeight;
+				// document.querySelector('[data-idtab="'+idTabNow+'"][data-id="'+dataFor+'"]').style.height = (tabContentHeight)+'px';
+				
+				
+				if(mode != 'init2')
+				for(var i=0;i<Functions.actClickTab.length;i++){						
+						if(Functions.actClickTab[i][idTabNow]){
+							if(Functions.actClickTab[i][idTabNow]['tab'] == dataFor){
+								var calbin = Functions.actClickTab[i][idTabNow]['callback'] || null;							
+								if(calbin != null && typeof calbin == 'function')
+									calbin(dataFor,document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]'));							
+							}
 						}
-
-					
 						
-					
+				}
 
-					
+				
+	
 
 		 	}
 			
@@ -368,29 +582,39 @@
 			}
 
 
-			var actionTabclick = document.querySelector('[data-idtab="'+idTabNow+'"]').getAttribute('action-tabclick');
+			
+			var actionTabclick = document.querySelector('[data-idtab="'+idTabNow+'"]').getAttribute('data-tabclick');
 
 			if(actionTabclick){
+
 				eval('var fn = '+actionTabclick+';');	
 				var fn_option = {
 					tab: {
 						name:dataFor,
-						content:document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]').innerHTML
+						content:document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]').innerHTML,
+						element:document.querySelector('[data-idtab="'+idTabNow+'"][data-for="'+dataFor+'"]')
 					},
 					slide: {
 						name:dataFor,
 						content:document.querySelector('[data-idtab="'+idTabNow+'"][data-id="'+dataFor+'"]').innerHTML,
+						element:document.querySelector('[data-idtab="'+idTabNow+'"][data-id="'+dataFor+'"]')
 					}
+
 				};
 				
-				if(hash != undefined || mode != 'init')
-				 fn(fn_option);
+				if(hash != undefined || (mode != 'init' && mode != 'init2')){					
+				 	fn(fn_option);
+				}
 							
 			}
 
-
 			
-			/*if(typeof Functions.eventClickFunctions['!unit'] != 'undefined'){
+			/*
+			
+			
+				corrigir implementação
+
+			if(typeof Functions.eventClickFunctions['!unit'] != 'undefined'){
 				if(typeof Functions.eventClickFunctions['!unit'][dataFor] != 'undefined'){
 					var funcUnit = Functions.eventClickFunctions['!unit'][dataFor];
 					 funcUnit(dataFor);
@@ -403,61 +627,123 @@
 					func(dataFor);
 				}
 			}
-*/
+			*/
 
 
-
-
+			
+	
 			if(document.querySelector('[data-idtab="'+idTabNow+'"][data-id="'+dataFor+'"]'))
 				document.querySelector('[data-idtab="'+idTabNow+'"][data-id="'+dataFor+'"]').setAttribute('data-status','active');
 
 
 									
 		},
-		init:function(){
-			var itabs = document.getElementsByClassName('itabs');	
+		autoslide:function(idTabNow){
 
-			for(var i = 0;i<itabs.length;i++){
-
-				var idTab = 'itabs'+countITabs;
-										
 			
 
-				
+			var autoslide = document.querySelector('#'+idTabNow).getAttribute('data-autoslide') || null;
 
+			
+				if(autoslide != null){
+				
+						
+					document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] ').removeAttribute('data-status');
+					document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] ').removeAttribute('data-mode');
+					document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] span').removeAttribute('transition');
+
+					var autoslideCheck = autoslide;
+					autoslideCheck = autoslideCheck.toLowerCase();
+					if(autoslideCheck.indexOf('ms') == -1){
+						autoslide = autoslide+'ms'; 
+					}
+
+
+					document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] span').style.transition = autoslide+'';				
+					document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] span').removeAttribute('width');
+					document.querySelector('#'+idTabNow).querySelector('[data-rel="progress"]').setAttribute('data-status','step-complete');					
+								
+					var progressTime = Array();
+
+					progressTime[document.querySelector('#'+idTabNow).getAttribute('data-idtab')] = setInterval(function(){
+							
+						var idtabNows = document.querySelector('.itabs [data-rel="progress"]').getAttribute('data-idtab');					
+						var progress_width_max = document.querySelector('#'+idtabNows+' [data-rel="progress"]').offsetWidth;
+						var progress_width_value = document.querySelector('#'+idtabNows+' [data-rel="progress"] span').offsetWidth;
+
+							 
+						 if(progress_width_value >=progress_width_max){								 	 
+						 	
+						 	var tabindex = Number(document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-status="active"]').getAttribute('data-index'));																 	
+						 							
+						 	if(document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-index="'+(tabindex+1)+'"]')){						 
+						 		var tabindexNext = document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-index="'+(tabindex+1)+'"]').getAttribute('data-for');										
+						 	}else{						 		
+						 		var tabindexNext = document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-index="'+(0)+'"]').getAttribute('data-for');										
+						 	}
+						 	
+						 	document.querySelector('#'+idtabNows+' ').querySelector('[data-rel="progress"]').setAttribute('data-mode','notransition');					
+						 	document.querySelector('#'+idtabNows+' ').querySelector('[data-rel="progress"]').setAttribute('data-status','');					
+						 	
+						 	Functions.openTab(tabindexNext,'initauto',idtabNows);
+
+						 	Functions.autoslide(idtabNows);
+						 	clearInterval(progressTime[idtabNows]);
+						 }
+					},500);					
+				}
+		},
+		init:function(){
+			var itabs = document.getElementsByClassName('itabs');	
+								
+			for(var i = 0;i<itabs.length;i++){
+
+				var idTab = 'itabs'+countITabs;									
+				var realIdTab =  itabs[i].getAttribute('id') || idTab;
+				
 				var dataStatus_key = '';
-				var tab = itabs[i].querySelectorAll('[data-rel="tab"]');
-				var slide = itabs[i].querySelectorAll('[data-rel="slide"]');
+				var tab = itabs[i].querySelector('[data-rel="tabs"]').querySelectorAll('[data-rel="tab"]');
+				var slide = itabs[i].querySelector('[data-rel="slides"]').querySelectorAll('[data-rel="slide"]');
 				
-				
-
-				if(itabs[i].getAttribute('data-counttab') == tab.length)
+				if( itabs[i].getAttribute('data-counttab') == tab.length)
 					continue;
-
-
+				
+				
 				itabs[i].setAttribute('data-counttab',tab.length);				
-
-
-
-
-				if(itabs[i].getAttribute('id') == null){					
+				
+				if(itabs[i].getAttribute('id') == null){	
 					itabs[i].setAttribute('id',idTab);		
-					itabs[i].setAttribute('data-idtab',idTab);			
+					itabs[i].setAttribute('data-idtab',idTab);	
 				}else{
 					idTab = itabs[i].getAttribute('id');
 					itabs[i].setAttribute('data-idtab',idTab);
+				}
 
+
+				if(itabs[i].querySelector('[data-rel="progress"]')){						
+					itabs[i].querySelector('[data-rel="progress"]').setAttribute('data-idtab',idTab);					
+					itabs[i].querySelector('[data-rel="progress"] span').setAttribute('data-idtab',idTab);					
 				}
 
 				for(var a = 0;a<slide.length;a++){				
-					 if( typeof slide[a] == 'object' ){
-
-						 slide[a].setAttribute('data-idtab',idTab);							
-					 }
+					if( typeof slide[a] == 'object' ){					 
+				 	 	if(slide[a].parentNode.parentNode.getAttribute('data-idtab') == idTab)
+						slide[a].setAttribute('data-idtab',idTab);							 
+						slide[a].setAttribute('data-index',a);										
+					}
 				}
 				
 				for(var a = 0;a<tab.length;a++){
 					if( typeof tab[a] == 'object' ){
+
+						if(!tab[a].getAttribute('data-for')){
+							var preDataFor = tab[a].innerHTML;
+							preDataFor = preDataFor.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
+							preDataFor = preDataFor.toLowerCase();
+							preDataFor = preDataFor.replace(/ /g,'-');
+							tab[a].setAttribute('data-for',preDataFor);
+						}
+
 						var dataFor = tab[a].getAttribute('data-for');
 						var dataStatus = tab[a].getAttribute('data-status');						
 						if(dataStatus == 'active'){
@@ -465,42 +751,52 @@
 						}
 
 						tab[a].setAttribute('data-idtab',idTab);	
-						Functions.addEvent(tab[a],'click',function(element){							
+						tab[a].setAttribute('data-index',a);	
+
+						tab[a].onclick = function(){
+							var element = this;
 							var idTabNow = element.getAttribute('data-idtab');
 							var dataFor = element.getAttribute('data-for');						
 							Functions.openTab(dataFor,null,idTabNow);
-						});
+							return false;
+						}
+					
 					}					
 				}
 				
-				alert(idTab);
+				
 
 				var dataHash = itabs[i].getAttribute('data-hash');				
 				if((dataHash == "true" || dataHash == true) && window.location.hash){
 
-				
+					
                     var hash = String(window.location.hash).replace('#','');    
                     
                     // abre a aba conforme o hash da url do navegador
-	                if(hash != undefined && hash.length != 0 ){    	                	
-	                	// alert(hash);
+	                if(hash != undefined && hash.length != 0 ){    	                		                	
 	                	Functions.openTab(hash,null,idTab);	   
 	                }                     
 	                
 				}else{
 					
-					
-					if(document.querySelector('#'+idTab+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idTab+'"][data-rel="tab"][data-status="active"]')){
+						
+					if(document.querySelector('#'+idTab+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idTab+'"][data-rel="tab"][data-status="active"]')){						
 						dataStatus_key = document.querySelector('#'+idTab+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idTab+'"][data-rel="tab"][data-status="active"]').getAttribute('data-for');										
-
 						if(dataStatus_key != ''){
 							 Functions.openTab(dataStatus_key,'init',idTab);	
 						}
 
-
 					}
 				}
-				/*Functions.loaded();*/
+
+
+				Functions.autoslide(itabs[i].getAttribute('data-idtab'));
+				
+
+				if(Functions.loaded != null){
+					Functions.loaded();
+					Functions.loaded = null;
+				}
 				countITabs++;
 
 

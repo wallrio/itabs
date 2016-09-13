@@ -1,45 +1,38 @@
 /**
- * iTabs v1.1 - 27/04/2016
+ * iTabs v1.4 - 13/09/2016
  * divide of content by tab
  *
  * developed by Wallace Rio <wallrio@gmail.com>
  * wallrio.com
  * 
- * tested on firefox/chrome/opera/ie8/safari
+ * tested on firefox v48 /chrome v38
  * 
  */
 
 
 .itabs.tabFlat{
-	background: #eee;
-}.itabs.tabFlat *{
-	padding: 0px;
-	margin: 0px;
-}.itabs.tabFlat [data-rel="tabs"]{
-	/*border:1px solid red;*/
+}.itabs.tabFlat [data-rel="tabs"]{		
+	background: #EEEEEE;
 }.itabs.tabFlat [data-rel="tabs"] > a[data-rel="tab"]{
-	display: inline-table;
-	padding: 10px;
-	margin-right: -6px;
-	background: #eee;
-	color: #444;
-	box-shadow: 0px 0px 0px 1px #ccc inset;
+	display: table-cell;
+	padding: 14px;
+	border: 0px;
+	margin: 0px;
+	box-shadow: none;
 	cursor: pointer;
-	
+	text-align: center;
+	font-weight: bold;
+	color: #0C4495;
+	text-decoration: none;
+	padding-bottom: 11px;
+	background: #eee;
+	text-transform: uppercase;	
+	vertical-align: middle;
 }.itabs.tabFlat [data-rel="tabs"] > a[data-rel="tab"]:hover{
-	display: inline-table;
-	padding: 10px;
-	margin-right: -6px;
-	background: #fff;
-	color: #444;
-	box-shadow: 0px 0px 0px 1px #ccc inset;	
+	background: #DCDCDC;
 }.itabs.tabFlat [data-rel="tabs"] > a[data-rel="tab"]:active{
-	display: inline-table;
-	padding: 10px;
-	margin-right: -6px;
-	background: #666;
+	background: #aaa;
 	color: #fff;
-	box-shadow: 0px 0px 0px 1px #ccc inset;		
 }.itabs.tabFlat [data-rel="tabs"] > a[data-rel="tab"][disabled="disabled"]{
 	pointer-events:none;
 	display: inline-table;
@@ -49,13 +42,25 @@
 	color: #A7A7A7;
 	box-shadow: 0px 0px 0px 1px #ccc inset;	
 }.itabs.tabFlat [data-rel="tabs"] > a[data-rel="tab"][data-status="active"]{
-	background: blue;
-	color: #fff;	
-}
-}.itabs.tabFlat [data-rel="slides"] {
-	border:1px solid #ccc;
+	background: #0C4495;
+	padding-top: 10px;
+	padding-bottom: 6px;
+	color: #fff;
+	font-weight: bold;
+}.itabs.tabFlat [data-rel="tabs"] > a[data-rel="tab"][data-status="active"]:hover{
+	background: #073474;
+}.itabs.tabFlat [data-rel="tabs"] > a[data-rel="tab"][data-status="active"]:active{
+	background: #02214C;
+}.itabs.tabFlat [data-rel="slides"] {	
 }.itabs.tabFlat [data-rel="slides"] [data-rel="slide"]{
-	display: none;
+	display: block;	
+	visibility: hidden;
+	padding-top: 10px;
+	height: 0px;
+	overflow: hidden;
 }.itabs.tabFlat [data-rel="slides"] [data-rel="slide"][data-status="active"]{
-	display: block;
+	visibility: visible;
+	height: auto;
 }
+
+

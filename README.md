@@ -1,10 +1,11 @@
-<h1>Tabs Responsible - iTabs - v1.1</h1>
+<h1>Tabs Responsible - iTabs - v1.11</h1>
 Plugin javascript to use tabs to separate content
 <p>Developed by Wallace Rio <wallrio@gmail.com></p>
+    wallrio@gmail.com
 <hr>
 
 <h3>Cross-Browser</h3>
-<p>Tested on Firefox 45 / IE 8 / Opera 12 / Chrome 38 / Safari 5</p>
+<p>Tested on Firefox v48 /Chrome v38</p>
 
 <h3>Use</h3>
 <p>Insert script tag and link tag into your head document html</p>
@@ -40,10 +41,10 @@ Plugin javascript to use tabs to separate content
 		</div>
 	</div>
 
-<h5>Example 2 - Action run-time</h5>
-<p>click on second tab for visualize the action</p>
+<h5>Example 2 - action on click tab</h5>
+<p>click on tab for visualize the action</p>
 
-	<div class="itabs tabFlat" id="ajax" >		
+	<div class="itabs tabFlat" id="itab1" data-tabclick="function(){alert('tab clicked');}" >		
 		<div data-rel="tabs" >
 			<a data-rel="tab" data-for="view1a" data-status="active">view1</a>
 			<a data-rel="tab" data-for="view2b" disabled="disabled">view2</a>
@@ -111,7 +112,7 @@ Plugin javascript to use tabs to separate content
 	<p>With click of tab was automatic insert hash by id tab on address bar</p>
 <p>Insert attributes 'data-hash="true"' for use hash</p>
 
-	<div class="itabs" data-hash="true">     
+	<div class="itabs tabFlat" data-hash="true">     
         <div data-rel="tabs" >
             <a data-rel="tab" data-for="view1" data-status="active"  >
             	view 1
@@ -127,17 +128,13 @@ Plugin javascript to use tabs to separate content
     </div>
 
 
-<h5>Example 5 - Execute javascript on tabclick</h5>
-	<p>With click of tab is run code defined on tag first itabs with attribute 'action-tabclick'</p>
+<h5>Example 5 - Execute javascript on tabclick with get parameters</h5>
+	<p>With click of tab is run code defined on tag first itabs with attribute 'data-tabclick'</p>
 
-	<div class="itabs" action-tabclick="function(value){alert(value);}">     
+	<div class="itabs tabFlat" data-tabclick="function(value){alert(JSON.stringify(value));}">     
         <div data-rel="tabs" >
-            <a data-rel="tab" data-for="view1" data-status="active"  >
-            	view 1
-            </a>
-            <a data-rel="tab" data-for="view2">
-        		view 2
-        	</a>
+            <a data-rel="tab" data-for="view1" data-status="active"  >view 1</a>
+            <a data-rel="tab" data-for="view2">view 2</a>
             </div>
         <div data-rel="slides">
             <div data-rel="slide" data-id="view1">view 1</div>
@@ -149,87 +146,122 @@ Plugin javascript to use tabs to separate content
     	{
     		"tab":{
 	    		"name":"name_of_tab",
-	    		"content":"content_of_tab"
+	    		"content":"content_of_tab",
+                "element":"element_tab_DOM"
     		},
     		"slide":{
     			"name":"name_of_slide",
-    			"content":"content_of_slide"
+    			"content":"content_of_slide",
+                "element":"element_slide_DOM"
     		}
     	}
 
+
+
+    <h5>Example 6 - Create a Banner Slider Automatic transition with progress bar</h5>
+    <p>Use markup similary above and use on style class for banner</p>
+
+    <div class="itabs tabBanner" id="itabBanner" data-autoslide="7000">
+        <div data-rel="progress">
+            <span></span>
+        </div>
+
+        <div data-rel="tabs" >            
+                <a data-rel="tab" data-for="view1" data-status="active" >1</a>
+                <a data-rel="tab" data-for="view2" >2</a>         
+        </div>
+                 
+        <div data-rel="slides">
+            <div data-rel="slide" data-id="view1"  style="background:url(image_path);" >
+                <p>content slider 1</p>
+            </div>
+            <div data-rel="slide" data-id="view1"  style="background:url(image_path);" >
+                <p>content slider 2</p>
+            </div>
+        </div>
+    </div>
+
+           
 <hr>
 
 <h3>Using a script</h3>
 	
-	<script type="text/javascript">
-		itabs('ajax').event('click').tab('view2b',function(e){
-			e.action.tab().content('tab new');		
-			e.action.slide().content('content new');					
-		});
-	</script>
+    <h2>Change content</h2>
+
+    <script type="text/javascript">
+        itabs('tab1').event('click').tab(function(e){     
+            e.action.tab().content('tab new');      
+            e.action.slide().content('content new');                    
+        });
+    </script>
+
+    <h2>Get content</h2>
+
+    <script type="text/javascript">
+        itabs('tab1').event('click').tab(function(e){     
+            alert(e.action.tab().content());      
+            alert(e.action.slide().content());                    
+        });
+    </script>
+
+    <h2>Change content on tag spedific</h2>
+
+    <script type="text/javascript">
+        itabs('tab1').event('click').tab(function(e){     
+            e.action.tab().content('tab new');      
+            e.action.slide().content('content new');                    
+        },id_of_tab);
+    </script>
+
+    <h2>Get id of tab click</h2>
+
+    <script type="text/javascript">
+        itabs('tab1').event('click').tab(function(e){     
+            alert(e.slideNow);                 
+        },id_of_tab);
+    </script>
+
+    <h2>Change tab or content without of itab </h2>
+
+    <script type="text/javascript">
+       itabs('tab1').action.tab(id_of_tab).content('tab new');      
+       itabs('tab1').action.slide(id_of_tab).content('content new');
+    </script>
+
+    <h2>Run after itab ready</h2>
+
+    itabs('itabMe').ready(function(){                                           
+        // code javascript                      
+    })                    
+
+    <h2>Add tab on run-time</h2>
+
+    itabs('tabs1').addTab({'title':'title_of_tab','for':'id_of_tab'},function(act){
+            act.html(slideHtml,function(){
+                // code javascript run after set content
+            }); 
+    },boolen_if_open_tab_after_create,html_join_tab_title,function_anonimous_on_click_tab);
 
 
+    <h2>Del tab on run-time</h2>
+  
+    itabs('tabs1').delTab('id_of_tab',function(){                                                 
+            // code javascript run after delete tab
+        return true;
+    });
+
+    <h2>Edit tab on run-time</h2>
+  
+    itabs('tabs1').editTab('id_of_tab','title_of_tab',function(){                                                 
+            // code javascript run after edit tab
+        return true;
+    });
 
 
 <h3>API - javascript</h3>
 
-<h4>Action on click of tab</h4>	
-
-- Example 1:
-
-	itabs('ajax').event('click').tab(function(id_of_tab_clicked){
-		// The code here only run on click of tab with id 'id_of_tab'
-	},'id_of_tab');
-
-- Example 2:
-
-	itabs('ajax').event('click').tab(function(id_of_tab_clicked){
-		// The code here run on click of all tabs
-	});
-
-	OR
-
-	itabs('itabMe').clickTab(function(nameTab,elementTab){
-        // insert you action here            
-    });
-
-<h4>Action on tab ready</h4>	
-	itabs('itabMe').ready(function(){
-        // insert you action here            
-    });
 
 
 
 
-<h4>Change title of tab</h4>	
-	
-	e.action.tab('data-for_of_tab').content('content');
-	
-	or
 
-	e.action.tab().content('content'); // this command get tab fron function clousure event
-
-	or
-
-	itabs('id_of_tabWrapper').action.tab('data-for_of_tab').content('content');		
-
-	or
-
-	itabs('id_of_tabWrapper').action.tab('data-for_of_tab').content('content');	
-
-
-<h4>Change title of slide</h4>	
-
-	e.action.slide('data-id_of_slide').content('content');
-	
-	or
-
-	e.action.slide().content('content'); // this command get tab fron function clousure event
-
-	or
-
-	itabs('id_of_tabWrapper').action.slide('data-id_of_slide').content('content');		
-
-	or
-
-	itabs('id_of_tabWrapper').action.slide('data-id_of_slide').content('content');	
