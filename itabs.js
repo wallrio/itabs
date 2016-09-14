@@ -1,5 +1,5 @@
 /**
- * iTabs v1.12 - 13/09/2016
+ * iTabs v1.13 - 14/09/2016
  * divide of content by tab
  *
  * developed by Wallace Rio <wallrio@gmail.com>
@@ -323,7 +323,7 @@
 					Functions.coutEventTab++;
 					
 
-					var callTab = (function(element){	
+					var callTab = (function(element,TabNow){	
 																		
 								var elt = element.getAttribute('data-for');
 
@@ -332,20 +332,20 @@
 								var fn_option = {
 									tab: {
 										name:elt,
-										content:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-for="'+elt+'"]').innerHTML,
-										element:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-for="'+elt+'"]')
+										content:document.querySelector('[data-idtab="'+TabNow+'"][data-for="'+elt+'"]').innerHTML,
+										element:document.querySelector('[data-idtab="'+TabNow+'"][data-for="'+elt+'"]')
 									},
 									slide: {
 										name:elt,
-										content:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-id="'+elt+'"]').innerHTML,
-										element:document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-id="'+elt+'"]')
+										content:document.querySelector('[data-idtab="'+TabNow+'"][data-id="'+elt+'"]').innerHTML,
+										element:document.querySelector('[data-idtab="'+TabNow+'"][data-id="'+elt+'"]')
 									}
 
 								};
 
-
+					
 								if(callback)
-									callback(Functions,fn_option);
+									callback(fn_option);
 						});
 
 
@@ -360,40 +360,43 @@
 
 						
 						
-
+						
 						
 
-						Functions.addEvent(window,'load',function(element){	
-									
-							// document.querySelector('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"]').onclick = null;
-							var elementTabArray = document.querySelectorAll('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"]');
+						Functions.addEvent(window,'load',function(element,TabNow){	
+						
+							
+
+							var elementTabArray = document.querySelectorAll('[data-rel="tab"][data-idtab="'+TabNow+'"]');
 							for(var i=0;i<elementTabArray.length;i++){
-								Functions.addEvent(elementTabArray[i],e,function(element){									
-									callTab(element);
+								Functions.addEvent(elementTabArray[i],e,function(element){	
+
+									callTab(element,TabNow);
 								});
 							}
 							
-					
+						
 
 							
 
 								if(window.location.hash){
+									
 	                   				var dataFor = String(window.location.hash).replace('#','');    	
 									if(dataFor != undefined && dataFor.length != 0 ){
-										callTab(document.querySelector('[data-idtab="'+Functions.TabNow+'"][data-for="'+dataFor+'"]'));
+										callTab(document.querySelector('[data-idtab="'+TabNow+'"][data-for="'+dataFor+'"]'),TabNow);
 									}
 									return false;
 								}else{
 
-									var dataHashBool = document.querySelector('.itabs[data-idtab="'+Functions.TabNow+'"]').getAttribute('data-hash');
-									var dataFor = document.querySelector('.itabs[data-idtab="'+Functions.TabNow+'"]').querySelector('[data-status="active"]').getAttribute('data-for');
-									var element = document.querySelector('.itabs[data-idtab="'+Functions.TabNow+'"]').querySelector('[data-status="active"]');
+									var dataHashBool = document.querySelector('.itabs[data-idtab="'+TabNow+'"]').getAttribute('data-hash');
+									var dataFor = document.querySelector('.itabs[data-idtab="'+TabNow+'"]').querySelector('[data-status="active"]').getAttribute('data-for');
+									var element = document.querySelector('.itabs[data-idtab="'+TabNow+'"]').querySelector('[data-status="active"]');
 									callTab(element);
 									if(dataHashBool == 'true')
 					 				window.location = "#"+dataFor;
 								}
 
-							});
+							},null,Functions.TabNow);
 							
 
 
@@ -411,21 +414,21 @@
 					
 
 					Functions.slideNow = dataFor;
-					Functions.addEvent(window,'load',function(element,callTab){
+					Functions.addEvent(window,'load',function(element,callTab,TabNow){
 					
-						var tab = document.querySelector('[data-rel="tab"][data-idtab="'+Functions.TabNow+'"][data-for="'+dataFor+'"]');						
+						var tab = document.querySelector('[data-rel="tab"][data-idtab="'+TabNow+'"][data-for="'+dataFor+'"]');						
 
 						if(tab == null)
 							return false;
 						
 						for (var i = 0;i<eArray.length; i++) {
-							Functions.addEvent(tab,eArray[i],function(element,callTab){																															
+							Functions.addEvent(tab,eArray[i],function(element,callTab,TabNow){																															
 								if(callTab){									
 									callTab(element);							
 								}
-							},null,callTab);
+							},null,callTab,TabNow);
 						};
-					},null,callTab);
+					},null,callTab,Functions.TabNow);
 																			
 				}
 			}		
