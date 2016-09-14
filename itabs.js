@@ -97,22 +97,14 @@
 		 * @param  {string} newName [titulo da aba]
 		 * @return null
 		 */
-		editTab:function(nameTab,newName,callback){
-			var title = '';
-			var forid = '';
-
-			if(typeof nameTab == 'object'){
-				title = nameTab.title;
-				forid = nameTab.for;
-			}else{
-				title = nameTab;
-				forid = nameTab;
-			}
-
-			var nameTabFit = nameTab.replace(/ /g,"");
-			var foridTabFit = forid.replace(/ /g,"");
-			$('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]').find('label').html(newName);
+		editTab:function(forid,newName,callback){
 			
+			var elem = document.querySelector('#'+TabNow+' > [data-rel="tabs"] [data-for="'+forid+'"] label');
+			if(!elem){
+				elem = document.querySelector('#'+TabNow+' > [data-rel="tabs"] [data-for="'+forid+'"]');				
+			}
+			elem.innerHTML = newName;		
+
 			if(callback)
 				callback();
 		},
@@ -139,20 +131,30 @@
 			var nameTabFit = title.replace(/ /g,"");
 			var foridTabFit = forid.replace(/ /g,"");
 						
+						
+			var prevTab = document.querySelector('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]').previousElementSibling;			
+
+			if(prevTab){
+				var prevTabId = prevTab.getAttribute('data-for');
+			}else{
+				prevTab = document.querySelector('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]').nextElementSibling;							
+				if(prevTab)
+				var prevTabId = prevTab.getAttribute('data-for');				
+			}
+
+			
+			var elemTab = document.querySelector('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]');			
+			elemTab.parentNode.removeChild(elemTab);
+
+			var elemSlide = document.querySelector('#'+TabNow+' > [data-rel="slides"] [data-id="'+foridTabFit+'"]');			
+			elemSlide.parentNode.removeChild(elemSlide);
+
+			if(prevTabId)
+				Functions.openTab(prevTabId,null,TabNow);
+
 			if(callback)
 				var returns = callback();
 
-			if(returns == false)
-				return;
-
-			var prevTab = $('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]').prev().attr('data-for');
-
-			$('#'+TabNow+' > [data-rel="tabs"] [data-for="'+foridTabFit+'"]').remove();
-			$('#'+TabNow+' > [data-rel="slides"] [data-id="'+foridTabFit+'"]').remove();
-	
-			Functions.openTab(prevTab,'init2',TabNow);
-
-			
 		},
 
 		/**
