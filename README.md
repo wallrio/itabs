@@ -1,4 +1,4 @@
-<h1>Tabs Responsible - iTabs - v1.12</h1>
+<h1>Tabs Responsible - iTabs - v1.13</h1>
 Plugin javascript to use tabs to separate content
 <p>Developed by Wallace Rio <wallrio@gmail.com></p>
     wallrio@gmail.com
