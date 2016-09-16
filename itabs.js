@@ -1,13 +1,49 @@
 /**
- * iTabs v1.13 - 14/09/2016
+ * iTabs v1.15 - 16/09/2016
  * divide of content by tab
  *
  * developed by Wallace Rio <wallrio@gmail.com>
  * wallrio.com
  * 
- * tested on firefox v48 /chrome v38
- * 
+  * tested on firefox v48 /chrome v38/ IE 8
+ *
+ * IE 8: mode banner autoslide
+ * 	It needs to be corrected abnormality
+ * 	
  */
+
+
+(function() {
+if (!document.getElementsByClassName) {
+    var indexOf = [].indexOf || function(prop) {
+        for (var i = 0; i < this.length; i++) {
+            if (this[i] === prop) return i;
+        }
+        return -1;
+    };
+    getElementsByClassName = function(className, context) {
+        var elems = document.querySelectorAll ? context.querySelectorAll("." + className) : (function() {
+            var all = context.getElementsByTagName("*"),
+                elements = [],
+                i = 0;
+            for (; i < all.length; i++) {
+                if (all[i].className && (" " + all[i].className + " ").indexOf(" " + className + " ") > -1 && indexOf.call(elements, all[i]) === -1) elements.push(all[i]);
+            }
+            return elements;
+        })();
+        return elems;
+    };
+    document.getElementsByClassName = function(className) {
+        return getElementsByClassName(className, document);
+    };
+
+    if(Element) {
+        Element.prototype.getElementsByClassName = function(className) {
+            return getElementsByClassName(className, this);
+        };
+    }
+}
+})();
 
 
 (function(){
@@ -34,6 +70,17 @@
 			Functions.loaded = callback;
 		},
 		
+		/**
+		 * Remove acentos
+		 * @param  {string} str 
+		 * @return {string}        
+		 */
+		removeAccents:function(str) {
+			str = str.replace(/[ÀÁÂÃÄÅ]/g,"A");
+		    str = str.replace(/[àáâãäå]/g,"a");
+		    str = str.replace(/[ÈÉÊË]/g,"E");	
+		    return str.replace(/[^a-z0-9]/gi,' '); 
+		},
 		/**
 		 * captura informação do itab atual
 		 * @return {json} 
@@ -121,8 +168,8 @@
 			var forid = '';
 
 			if(typeof nameTab == 'object'){
-				title = nameTab.title;
-				forid = nameTab.for;
+				title = nameTab['title'];
+				forid = nameTab['for'];
 			}else{
 				title = nameTab;
 				forid = nameTab;
@@ -170,8 +217,8 @@
 			var forid = '';
 
 			if(typeof nameTab == 'object'){
-				title = nameTab.title;
-				forid = nameTab.for;
+				title = nameTab['title'];
+				forid = nameTab['for'];
 			}else{
 				title = nameTab;
 				forid = nameTab;
@@ -315,11 +362,15 @@
 
 		},
 		event:function(e){
+			
+			
+			
 
 			var eArray = e.split(' ');
 			return {
 				tab:function(callback,dataFor){	
 					
+
 					Functions.coutEventTab++;
 					
 
@@ -328,7 +379,7 @@
 								var elt = element.getAttribute('data-for');
 
 								Functions.slideNow = elt;
-
+																
 								var fn_option = {
 									tab: {
 										name:elt,
@@ -343,7 +394,7 @@
 
 								};
 
-					
+								
 								if(callback)
 									callback(fn_option);
 						});
@@ -364,8 +415,13 @@
 						
 
 						Functions.addEvent(window,'load',function(element,TabNow){	
-						
 							
+							Functions.init();
+
+							if(!document.querySelector('.itabs[data-idtab="'+TabNow+'"]'))
+								return false;
+							
+
 
 							var elementTabArray = document.querySelectorAll('[data-rel="tab"][data-idtab="'+TabNow+'"]');
 							for(var i=0;i<elementTabArray.length;i++){
@@ -387,13 +443,23 @@
 									}
 									return false;
 								}else{
+									var dataHashBool = null;
+									var dataFor = null;
+									var element = null;
 
-									var dataHashBool = document.querySelector('.itabs[data-idtab="'+TabNow+'"]').getAttribute('data-hash');
-									var dataFor = document.querySelector('.itabs[data-idtab="'+TabNow+'"]').querySelector('[data-status="active"]').getAttribute('data-for');
-									var element = document.querySelector('.itabs[data-idtab="'+TabNow+'"]').querySelector('[data-status="active"]');
-									callTab(element);
-									if(dataHashBool == 'true')
-					 				window.location = "#"+dataFor;
+									if(document.querySelector('.itabs[data-idtab="'+TabNow+'"]')){
+										dataHashBool = document.querySelector('.itabs[data-idtab="'+TabNow+'"]').getAttribute('data-hash');							
+										
+										if(document.querySelector('.itabs[data-idtab="'+TabNow+'"]').querySelector('[data-status="active"]')){
+											dataFor = document.querySelector('.itabs[data-idtab="'+TabNow+'"]').querySelector('[data-status="active"]').getAttribute('data-for');
+
+											element = document.querySelector('.itabs[data-idtab="'+TabNow+'"]').querySelector('[data-status="active"]');
+											callTab(element,TabNow);
+
+											if(dataHashBool == 'true')
+								 				window.location = "#"+dataFor;
+										}
+									}
 								}
 
 							},null,Functions.TabNow);
@@ -415,7 +481,13 @@
 
 					Functions.slideNow = dataFor;
 					Functions.addEvent(window,'load',function(element,callTab,TabNow){
-					
+						
+						Functions.init();
+
+						if(!document.querySelector('.itabs[data-idtab="'+TabNow+'"]'))
+								return false;
+
+
 						var tab = document.querySelector('[data-rel="tab"][data-idtab="'+TabNow+'"][data-for="'+dataFor+'"]');						
 
 						if(tab == null)
@@ -424,7 +496,7 @@
 						for (var i = 0;i<eArray.length; i++) {
 							Functions.addEvent(tab,eArray[i],function(element,callTab,TabNow){																															
 								if(callTab){									
-									callTab(element);							
+									callTab(element,TabNow);							
 								}
 							},null,callTab,TabNow);
 						};
@@ -687,35 +759,44 @@
 					document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] span').style.transition = autoslide+'';				
 					document.querySelector('#'+idTabNow+' ').querySelector('[data-rel="progress"] span').removeAttribute('width');
 					document.querySelector('#'+idTabNow).querySelector('[data-rel="progress"]').setAttribute('data-status','step-complete');					
+
+					if(document.querySelector('#'+idTabNow+' [data-rel="progress"]')){
+						var progressTime = Array();					
+						progressTime[document.querySelector('#'+idTabNow).getAttribute('data-idtab')] = setInterval(function(){
 								
-					var progressTime = Array();
+							var idtabNows = document.querySelector('.itabs [data-rel="progress"]').getAttribute('data-idtab');	
+								if(document.querySelector('#'+idtabNows+' [data-rel="progress"]') == null ||
+									document.querySelector('#'+idtabNows+' [data-rel="progress"]') == 'null'){
+									clearInterval(progressTime[idtabNows]);
+									return false;
+								}
 
-					progressTime[document.querySelector('#'+idTabNow).getAttribute('data-idtab')] = setInterval(function(){
-							
-						var idtabNows = document.querySelector('.itabs [data-rel="progress"]').getAttribute('data-idtab');					
-						var progress_width_max = document.querySelector('#'+idtabNows+' [data-rel="progress"]').offsetWidth;
-						var progress_width_value = document.querySelector('#'+idtabNows+' [data-rel="progress"] span').offsetWidth;
+								var progress_width_max = document.querySelector('#'+idtabNows+' [data-rel="progress"]').offsetWidth;
+								var progress_width_value = document.querySelector('#'+idtabNows+' [data-rel="progress"] span').offsetWidth;
 
-							 
-						 if(progress_width_value >=progress_width_max){								 	 
-						 	
-						 	var tabindex = Number(document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-status="active"]').getAttribute('data-index'));																 	
-						 							
-						 	if(document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-index="'+(tabindex+1)+'"]')){						 
-						 		var tabindexNext = document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-index="'+(tabindex+1)+'"]').getAttribute('data-for');										
-						 	}else{						 		
-						 		var tabindexNext = document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-index="'+(0)+'"]').getAttribute('data-for');										
-						 	}
-						 	
-						 	document.querySelector('#'+idtabNows+' ').querySelector('[data-rel="progress"]').setAttribute('data-mode','notransition');					
-						 	document.querySelector('#'+idtabNows+' ').querySelector('[data-rel="progress"]').setAttribute('data-status','');					
-						 	
-						 	Functions.openTab(tabindexNext,'initauto',idtabNows);
 
-						 	Functions.autoslide(idtabNows);
-						 	clearInterval(progressTime[idtabNows]);
-						 }
-					},500);					
+								 
+								 if(progress_width_value >=progress_width_max){								 	 
+								 	
+								 	var tabindex = Number(document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-status="active"]').getAttribute('data-index'));																 	
+								 							
+								 	if(document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-index="'+(tabindex+1)+'"]')){						 
+								 		var tabindexNext = document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-index="'+(tabindex+1)+'"]').getAttribute('data-for');										
+								 	}else{						 		
+								 		var tabindexNext = document.querySelector('#'+idtabNows+' > [data-rel="tabs"]').querySelector('[data-idtab="'+idtabNows+'"][data-rel="tab"][data-index="'+(0)+'"]').getAttribute('data-for');										
+								 	}
+								 	
+								 	document.querySelector('#'+idtabNows+' ').querySelector('[data-rel="progress"]').setAttribute('data-mode','notransition');					
+								 	document.querySelector('#'+idtabNows+' ').querySelector('[data-rel="progress"]').setAttribute('data-status','');					
+								 	
+								 	Functions.openTab(tabindexNext,'initauto',idtabNows);
+
+								 	Functions.autoslide(idtabNows);
+								 	clearInterval(progressTime[idtabNows]);
+								 }
+
+						},500);		
+					}			
 				}
 		},
 		init:function(){
@@ -763,7 +844,7 @@
 
 						if(!tab[a].getAttribute('data-for')){
 							var preDataFor = tab[a].innerHTML;
-							preDataFor = preDataFor.normalize('NFD').replace(/[\u0300-\u036f]/g,"");
+							preDataFor = Functions.removeAccents(preDataFor);				
 							preDataFor = preDataFor.toLowerCase();
 							preDataFor = preDataFor.replace(/ /g,'-');
 							tab[a].setAttribute('data-for',preDataFor);
