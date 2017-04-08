@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/wallacerio/itabs.png?label=ready&title=Ready)](https://waffle.io/wallacerio/itabs)
 <h1>Tabs Responsible - iTabs - v1.13</h1>
 Plugin javascript to use tabs to separate content
 <p>Developed by Wallace Rio <wallrio@gmail.com></p>
